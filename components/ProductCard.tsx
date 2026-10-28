@@ -22,60 +22,87 @@ function ShopeeIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
   );
 }
 
-// Thẻ sản phẩm ngang chuẩn theo mẫu giao diện ChatGPT / Shopee
+// Icon tương ứng theo từng loại trang phục
+function getCategoryIcon(category: string) {
+  const cat = (category || '').toLowerCase();
+  if (cat.includes('quần') || cat.includes('jean') || cat.includes('trousers') || cat.includes('short')) {
+    return '👖';
+  }
+  if (cat.includes('váy') || cat.includes('đầm') || cat.includes('skirt') || cat.includes('dress')) {
+    return '👗';
+  }
+  if (cat.includes('áo') || cat.includes('shirt') || cat.includes('croptop') || cat.includes('hoodie')) {
+    return '👚';
+  }
+  if (cat.includes('giày') || cat.includes('dép') || cat.includes('sneaker') || cat.includes('boots')) {
+    return '👟';
+  }
+  if (cat.includes('túi') || cat.includes('balo') || cat.includes('ví') || cat.includes('bag')) {
+    return '👜';
+  }
+  if (cat.includes('phụ kiện') || cat.includes('nón') || cat.includes('mũ') || cat.includes('kính')) {
+    return '👒';
+  }
+  return '✨';
+}
+
+// Thẻ sản phẩm tối ưu dẫn trực tiếp đến trang tìm kiếm Shopee bán chạy
 export function ProductCard({ item, index }: ProductCardProps) {
+  const icon = getCategoryIcon(item.category);
+  const targetUrl = item.searchUrl || item.directUrl;
+
   return (
-    <div className="group bg-white hover:bg-pink-50/40 rounded-2xl border border-pink-100 hover:border-pink-300 p-3 shadow-sm hover:shadow-md transition-all duration-200 flex gap-3.5 items-center">
-      {/* Cột trái: Hình ảnh thật của sản phẩm */}
-      <div className="relative w-20 h-24 sm:w-24 sm:h-28 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100 border border-gray-100 shadow-inner">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={item.imageUrl}
-          alt={item.name}
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-          loading="lazy"
-        />
-        <div className="absolute top-1 left-1 bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">
+    <div className="group bg-white hover:bg-pink-50/30 rounded-2xl border border-pink-100 hover:border-pink-300 p-3.5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+      {/* Cột trái: Icon danh mục thời trang kèm số thứ tự */}
+      <div className="relative w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 rounded-2xl bg-gradient-to-br from-pink-100 via-purple-50 to-pink-50 border border-pink-200/60 flex flex-col items-center justify-center shadow-xs">
+        <span className="text-2xl sm:text-3xl select-none" role="img" aria-label={item.category}>
+          {icon}
+        </span>
+        <div className="absolute -top-1.5 -left-1.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full shadow-xs">
           #{index + 1}
         </div>
       </div>
 
-      {/* Cột phải: Thông tin chi tiết + link Shopee trực tiếp */}
-      <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+      {/* Cột giữa: Chi tiết sản phẩm, danh mục và mô tả */}
+      <div className="flex-1 min-w-0 flex flex-col justify-between">
         <div>
-          {/* Tên sản phẩm đánh số */}
-          <h3 className="font-bold text-gray-800 text-sm sm:text-base leading-snug line-clamp-2 group-hover:text-pink-600 transition-colors">
-            {index + 1}. {item.name}
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-pink-100/70 text-pink-700 border border-pink-200/50">
+              {item.category || 'Thời trang'}
+            </span>
+            <span className="text-xs font-bold text-gray-700 bg-gray-100 px-2 py-0.5 rounded-full">
+              {item.priceRange || formatPrice(item.price)}
+            </span>
+          </div>
+
+          <h3 className="font-bold text-gray-900 text-sm sm:text-base leading-snug group-hover:text-pink-600 transition-colors">
+            {item.name}
           </h3>
 
-          {/* Khoảng giá */}
-          <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
-            {item.priceRange || formatPrice(item.price)}
-          </p>
-
-          {/* Mô tả ngắn / điểm nổi bật */}
-          <p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2 leading-relaxed">
+          <p className="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">
             {item.description || item.note}
           </p>
         </div>
 
-        {/* Nút link trực tiếp đến Shopee */}
-        <div className="flex flex-wrap items-center gap-2 mt-2 pt-1 border-t border-gray-100">
+        {/* Nút tìm kiếm trên Shopee */}
+        <div className="flex flex-wrap items-center justify-between gap-2 mt-2.5 pt-2 border-t border-gray-100">
           <a
-            href={item.directUrl}
+            href={targetUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline active:scale-95 transition-transform"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 px-3 py-1.5 rounded-xl shadow-xs hover:shadow-sm active:scale-95 transition-all"
           >
+            <ShopeeIcon className="w-4 h-4 text-white" />
             <span>Xem sản phẩm trên Shopee</span>
             <span className="text-xs">↗</span>
           </a>
 
-          {/* Badge nhãn hiệu Shopee */}
-          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-orange-600 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-full">
-            <ShopeeIcon className="w-3 h-3 text-orange-500" />
-            {item.shopName || 'Shopee Việt Nam'}
-          </span>
+          <div className="text-[11px] text-gray-500 flex items-center gap-1">
+            <span>Từ khóa:</span>
+            <span className="font-medium text-gray-700 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200">
+              {item.keyword || item.name}
+            </span>
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,11 @@
 import { ProductItem, OutfitInfo } from './types';
 
+// Tạo link tìm kiếm Shopee an toàn, luôn hiển thị sản phẩm thật và sắp xếp theo lượt bán
+export function createShopeeSearchUrl(keyword: string): string {
+  const cleanKeyword = keyword.trim();
+  return `https://shopee.vn/search?keyword=${encodeURIComponent(cleanKeyword)}&sortBy=sales`;
+}
+
 // Phân tích block STYLIE_PRODUCTS từ phản hồi của AI
 export function parseStylieProducts(content: string): {
   cleanContent: string;
@@ -25,17 +31,23 @@ export function parseStylieProducts(content: string): {
           maxPrice?: number;
           keyword?: string;
           note?: string;
-        }, idx: number) => ({
-          id: `item-${idx}`,
-          name: it.name,
-          category: it.category || 'Thời trang',
-          price: it.estimatedPrice || 150000,
-          priceRange: `Khoảng ${new Intl.NumberFormat('vi-VN').format(it.estimatedPrice || 150000)}đ`,
-          imageUrl: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=400&q=80',
-          directUrl: `https://shopee.vn/search?keyword=${encodeURIComponent(it.keyword || it.name)}`,
-          description: it.note || 'Sản phẩm đề xuất cho bạn',
-          shopName: 'Shopee Việt Nam',
-        }));
+        }, idx: number) => {
+          const keyword = it.keyword || it.name || 'thời trang nữ';
+          const searchUrl = createShopeeSearchUrl(keyword);
+          return {
+            id: `legacy-${idx}`,
+            name: it.name,
+            category: it.category || 'Thời trang',
+            keyword,
+            price: it.estimatedPrice || 150000,
+            priceRange: `Khoảng ${new Intl.NumberFormat('vi-VN').format(it.estimatedPrice || 150000)}đ`,
+            searchUrl,
+            directUrl: searchUrl,
+            description: it.note || 'Sản phẩm gợi ý phù hợp với phong cách của bạn',
+            shopName: 'Shopee Việt Nam',
+            note: it.note,
+          };
+        });
 
         const totalEstimated = products.reduce((sum, p) => sum + p.price, 0);
         return {
@@ -62,18 +74,25 @@ export function parseStylieProducts(content: string): {
     const data = JSON.parse(jsonStr);
     const cleanContent = content.replace(/STYLIE_PRODUCTS:[\s\S]*?END_STYLIE_PRODUCTS/g, '').trim();
 
-    const products: ProductItem[] = (data.items || []).map((p: ProductItem, idx: number) => ({
-      id: p.id || `p-${idx}`,
-      name: p.name,
-      category: p.category || 'Thời trang',
-      price: p.price || 150000,
-      priceRange: p.priceRange || `Khoảng ${new Intl.NumberFormat('vi-VN').format(p.price || 150000)}đ`,
-      imageUrl: p.imageUrl,
-      directUrl: p.directUrl,
-      description: p.description || '',
-      shopName: p.shopName || 'Shopee Việt Nam',
-      note: p.note,
-    }));
+    const products: ProductItem[] = (data.items || []).map((p: Partial<ProductItem>, idx: number) => {
+      const keyword = p.keyword || p.name || 'thời trang nữ';
+      const searchUrl = createShopeeSearchUrl(keyword);
+      const price = typeof p.price === 'number' ? p.price : 150000;
+
+      return {
+        id: p.id || `item-${idx + 1}`,
+        name: p.name || 'Sản phẩm thời trang',
+        category: p.category || 'Thời trang',
+        keyword,
+        price,
+        priceRange: p.priceRange || `Khoảng ${new Intl.NumberFormat('vi-VN').format(price)}đ`,
+        searchUrl,
+        directUrl: searchUrl, // Trỏ đến trang tìm kiếm Shopee bán chạy
+        description: p.description || p.note || '',
+        shopName: p.shopName || 'Shopee Việt Nam',
+        note: p.note,
+      };
+    });
 
     const totalEstimated = products.reduce((sum, p) => sum + p.price, 0);
 

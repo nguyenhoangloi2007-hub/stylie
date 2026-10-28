@@ -13,17 +13,19 @@ export interface ProductItem {
   id: string;
   name: string;
   category: string;
+  keyword?: string;
   price: number;
   priceRange: string;
-  imageUrl: string;
-  directUrl: string;
+  searchUrl?: string;
+  directUrl: string; // Tương thích ngược: trỏ thẳng đến trang tìm kiếm Shopee
   description: string;
-  shopName: string;
+  shopName?: string;
   note?: string;
+  imageUrl?: string;
 }
 
 export interface OutfitInfo {
-  isOutfit: boolean; // true nếu là outfit phối đồ, false nếu là danh sách gợi ý 1 món (như chỉ tìm quần, chỉ tìm áo)
+  isOutfit: boolean; // true nếu là outfit phối đồ, false nếu là danh sách nhiều mẫu của 1 loại đồ
   totalBudget: number;
   totalEstimated: number;
   occasion?: string;
