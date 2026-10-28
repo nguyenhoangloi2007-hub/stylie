@@ -12,7 +12,7 @@ const WELCOME_MESSAGE: Message = {
   id: 'welcome',
   role: 'assistant',
   content:
-    'Xin chào! Mình là Stylie ✨ — trợ lý thời trang AI của bạn! 💕\n\nMình có thể giúp bạn:\n👖 Tìm kiếm trực tiếp các sản phẩm thời trang trên Shopee (quần jeans, áo, chân váy...)\n👗 Tư vấn phối trọn bộ outfit theo phong cách cá nhân\n💰 Kiểm soát chi phí outfit chuẩn theo ngân sách của bạn\n\nBạn muốn tìm đồ gì hoặc phối outfit thế nào hôm nay nè? 😊',
+    'Xin chào! Tôi là Stylie — trợ lý AI tư vấn thời trang và gợi ý sản phẩm trên Shopee.\n\nTôi có thể hỗ trợ bạn:\n- Tìm kiếm các món đồ thời trang (quần jeans, áo sơ mi, chân váy, v.v.) theo phong cách và ngân sách\n- Gợi ý phối trọn bộ outfit phù hợp cho từng dịp (đi học, đi chơi, đi làm)\n- Cung cấp link sản phẩm trực tiếp trên Shopee để bạn tham khảo\n\nBạn đang cần tìm trang phục gì hay muốn tư vấn phong cách nào hôm nay?',
   timestamp: new Date(),
 };
 
