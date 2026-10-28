@@ -7,6 +7,7 @@ export interface Message {
   timestamp: Date;
   products?: ProductItem[];
   outfitInfo?: OutfitInfo;
+  image?: string; // Data URL của ảnh người dùng tải lên
 }
 
 export interface ProductItem {
@@ -33,7 +34,17 @@ export interface OutfitInfo {
 }
 
 // Định dạng lịch sử hội thoại gửi cho Gemini API
+export type GeminiPart =
+  | { text: string }
+  | { inlineData: { mimeType: string; data: string } };
+
 export interface GeminiMessage {
   role: 'user' | 'model';
-  parts: Array<{ text: string }>;
+  parts: GeminiPart[];
+}
+
+export interface AttachedImage {
+  data: string; // Chuỗi base64 (không bao gồm tiền tố data:image/...)
+  mimeType: string;
+  previewUrl: string; // Data URL đầy đủ để render xem trước trên UI
 }

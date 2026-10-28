@@ -5,15 +5,21 @@ import { GeminiMessage } from '@/lib/types';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { message, history } = body as {
-      message: string;
-      history: GeminiMessage[];
+    const { message, history, image } = body as {
+      message?: string;
+      history?: GeminiMessage[];
+      image?: {
+        data: string;
+        mimeType: string;
+      };
     };
 
-    // Kiểm tra đầu vào
-    if (!message || typeof message !== 'string' || message.trim() === '') {
+    const text = (message || '').trim();
+
+    // Kiểm tra đầu vào: phải có ít nhất tin nhắn văn bản hoặc hình ảnh
+    if (!text && (!image || !image.data)) {
       return NextResponse.json(
-        { error: 'Tin nhắn không được để trống.' },
+        { error: 'Vui lòng nhập tin nhắn hoặc chọn hình ảnh để Stylie tư vấn.' },
         { status: 400 }
       );
     }
@@ -29,8 +35,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Gửi tin nhắn tới Gemini
-    const response = await sendMessage(message.trim(), history || []);
+    // Gửi tin nhắn và hình ảnh tới Gemini
+    const response = await sendMessage(text, history || [], image);
 
     return NextResponse.json({ response });
   } catch (error: unknown) {

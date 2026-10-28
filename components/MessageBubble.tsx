@@ -28,7 +28,19 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
       <div className="flex justify-end mb-4">
         <div className="max-w-[85%] sm:max-w-[70%]">
           <div className="bg-gradient-to-br from-pink-400 to-purple-500 text-white rounded-2xl rounded-tr-sm px-4 py-3 shadow-md">
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+            {message.image && (
+              <div className="mb-2.5 rounded-xl overflow-hidden bg-black/10 border border-white/20 shadow-xs">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={message.image}
+                  alt="Ảnh trang phục bạn gửi"
+                  className="w-full max-h-72 object-contain bg-black/20"
+                />
+              </div>
+            )}
+            {message.content && (
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+            )}
           </div>
           <p suppressHydrationWarning className="text-xs text-gray-400 text-right mt-1 mr-1">{time}</p>
         </div>
