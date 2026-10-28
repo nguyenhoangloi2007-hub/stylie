@@ -22,55 +22,39 @@ function ShopeeIcon({ className = 'w-3.5 h-3.5' }: { className?: string }) {
   );
 }
 
-// Icon tương ứng theo từng loại trang phục
-function getCategoryIcon(category: string) {
-  const cat = (category || '').toLowerCase();
-  if (cat.includes('quần') || cat.includes('jean') || cat.includes('trousers') || cat.includes('short')) {
-    return '👖';
-  }
-  if (cat.includes('váy') || cat.includes('đầm') || cat.includes('skirt') || cat.includes('dress')) {
-    return '👗';
-  }
-  if (cat.includes('áo') || cat.includes('shirt') || cat.includes('croptop') || cat.includes('hoodie')) {
-    return '👚';
-  }
-  if (cat.includes('giày') || cat.includes('dép') || cat.includes('sneaker') || cat.includes('boots')) {
-    return '👟';
-  }
-  if (cat.includes('túi') || cat.includes('balo') || cat.includes('ví') || cat.includes('bag')) {
-    return '👜';
-  }
-  if (cat.includes('phụ kiện') || cat.includes('nón') || cat.includes('mũ') || cat.includes('kính')) {
-    return '👒';
-  }
-  return '✨';
-}
-
-// Thẻ sản phẩm tối ưu dẫn trực tiếp đến trang tìm kiếm Shopee bán chạy
+// Thẻ sản phẩm ngang chuẩn hiển thị hình ảnh thời trang thật và link Shopee
 export function ProductCard({ item, index }: ProductCardProps) {
-  const icon = getCategoryIcon(item.category);
   const targetUrl = item.searchUrl || item.directUrl;
+  const imageSource = item.imageUrl || 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=400&q=80';
 
   return (
-    <div className="group bg-white hover:bg-pink-50/30 rounded-2xl border border-pink-100 hover:border-pink-300 p-3.5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-      {/* Cột trái: Icon danh mục thời trang kèm số thứ tự */}
-      <div className="relative w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 rounded-2xl bg-gradient-to-br from-pink-100 via-purple-50 to-pink-50 border border-pink-200/60 flex flex-col items-center justify-center shadow-xs">
-        <span className="text-2xl sm:text-3xl select-none" role="img" aria-label={item.category}>
-          {icon}
-        </span>
-        <div className="absolute -top-1.5 -left-1.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full shadow-xs">
+    <div className="group bg-white hover:bg-pink-50/20 rounded-2xl border border-pink-100 hover:border-pink-300 p-3 sm:p-3.5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row gap-3.5 items-start sm:items-center">
+      {/* Cột trái: Hình ảnh thật của sản phẩm thời trang */}
+      <div className="relative w-24 h-28 sm:w-28 sm:h-32 flex-shrink-0 rounded-2xl overflow-hidden bg-gray-100 border border-pink-100 shadow-inner group-hover:shadow transition-shadow">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={imageSource}
+          alt={item.name}
+          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+          loading="lazy"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src =
+              'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=400&q=80';
+          }}
+        />
+        <div className="absolute top-1.5 left-1.5 bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">
           #{index + 1}
         </div>
       </div>
 
-      {/* Cột giữa: Chi tiết sản phẩm, danh mục và mô tả */}
-      <div className="flex-1 min-w-0 flex flex-col justify-between">
+      {/* Cột phải: Thông tin chi tiết + nút xem trên Shopee */}
+      <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch py-0.5">
         <div>
           <div className="flex flex-wrap items-center gap-2 mb-1">
             <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-pink-100/70 text-pink-700 border border-pink-200/50">
               {item.category || 'Thời trang'}
             </span>
-            <span className="text-xs font-bold text-gray-700 bg-gray-100 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded-full">
               {item.priceRange || formatPrice(item.price)}
             </span>
           </div>
@@ -79,20 +63,20 @@ export function ProductCard({ item, index }: ProductCardProps) {
             {item.name}
           </h3>
 
-          <p className="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">
+          <p className="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed line-clamp-2">
             {item.description || item.note}
           </p>
         </div>
 
         {/* Nút tìm kiếm trên Shopee */}
-        <div className="flex flex-wrap items-center justify-between gap-2 mt-2.5 pt-2 border-t border-gray-100">
+        <div className="flex flex-wrap items-center justify-between gap-2 mt-2 pt-2 border-t border-gray-100">
           <a
             href={targetUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 px-3 py-1.5 rounded-xl shadow-xs hover:shadow-sm active:scale-95 transition-all"
           >
-            <ShopeeIcon className="w-4 h-4 text-white" />
+            <ShopeeIcon className="w-3.5 h-3.5 text-white" />
             <span>Xem sản phẩm trên Shopee</span>
             <span className="text-xs">↗</span>
           </a>
