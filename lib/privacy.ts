@@ -19,9 +19,9 @@ export interface SensitiveNumberMatch {
 export function maskSensitiveNumber(numStr: string): string {
   const digitsOnly = numStr.replace(/\D/g, '');
   if (digitsOnly.length <= 4) return numStr;
-  const first2 = digitsOnly.slice(0, 3);
-  const last2 = digitsOnly.slice(-3);
-  return `${first2}${'*'.repeat(Math.max(4, digitsOnly.length - 6))}${last2}`;
+  const first = digitsOnly.slice(0, 3);
+  const last = digitsOnly.slice(-3);
+  return `${first}${'•'.repeat(Math.max(4, digitsOnly.length - 6))}${last}`;
 }
 
 // Kiểm tra xem một vị trí số có phải là giá tiền / ngân sách không
@@ -81,7 +81,7 @@ export function detectSensitiveNumbers(text: string): SensitiveNumberMatch | nul
       if (!isPriceOrBudget(cleanText, match.index, rawMatch.length)) {
         return {
           type: 'cccd',
-          typeName: 'Căn cước công dân (CCCD - 12 số)',
+          typeName: 'Căn cước công dân (CCCD)',
           matchedText: rawMatch,
           maskedText: maskSensitiveNumber(rawMatch),
         };
@@ -160,7 +160,7 @@ export function generatePrivacyWarningResponse(match: SensitiveNumberMatch): str
 Bạn có thể cho tôi biết bạn đang nhập dãy số đó là số gì và nhằm mục đích gì không?
 
 ⚠️ **CẢNH BÁO AN TOÀN VÀ BẢO VỆ DỮ LIỆU CÁ NHÂN:**
-Bạn tuyệt đối **KHÔNG NÊN cung cấp thông tin cá nhân nhạy cảm** (như số Căn cước công dân 12 số, số điện thoại, mã sinh viên, số tài khoản ngân hàng, mật khẩu...) cho tôi hay bất kỳ chatbot AI nào trên internet:
+Bạn tuyệt đối **KHÔNG NÊN cung cấp thông tin cá nhân nhạy cảm** (như số Căn cước công dân, số điện thoại, mã sinh viên, số tài khoản ngân hàng, mật khẩu...) cho tôi hay bất kỳ chatbot AI nào trên internet:
 1. **Bảo mật quyền riêng tư:** Stylie là trợ lý AI hỗ trợ tư vấn thời trang và gợi ý sản phẩm, hoàn toàn **không cần** và **không có quyền** thu thập hay lưu trữ thông tin định danh cá nhân của bạn.
 2. **Phòng tránh rủi ro:** Việc chia sẻ dữ liệu nhạy cảm trên các nền tảng trực tuyến có thể tiềm ẩn nguy cơ bị lộ lọt thông tin hoặc bị kẻ xấu lợi dụng.
 

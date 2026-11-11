@@ -10,9 +10,9 @@ interface MessageBubbleProps {
 // Hàm format markdown đơn giản → HTML
 function formatMarkdown(text: string): string {
   return text
+    .replace(/`(.*?)`/g, '<code class="bg-pink-50 text-pink-700 px-1.5 py-0.5 rounded text-xs font-mono">$1</code>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/`(.*?)`/g, '<code class="bg-pink-50 text-pink-700 px-1 rounded text-xs">$1</code>')
     .replace(/\n/g, '<br/>');
 }
 
