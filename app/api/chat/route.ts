@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendMessage } from '@/lib/gemini';
 import { GeminiMessage } from '@/lib/types';
+import { detectSensitiveNumbers, generatePrivacyWarningResponse } from '@/lib/privacy';
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,6 +34,16 @@ export async function POST(request: NextRequest) {
         },
         { status: 503 }
       );
+    }
+
+    // Kiểm tra và cảnh báo dãy số nhạy cảm / đáng ngờ (CCCD, SĐT, Mã sinh viên, Số tài khoản...)
+    if (text) {
+      const sensitiveMatch = detectSensitiveNumbers(text);
+      if (sensitiveMatch) {
+        return NextResponse.json({
+          response: generatePrivacyWarningResponse(sensitiveMatch),
+        });
+      }
     }
 
     // Gửi tin nhắn và hình ảnh tới Gemini
